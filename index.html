@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <title>空中飞车 - 体感竞速</title>
+  <meta charset="utf-8">
+  <meta name="description" content="空中飞车 - 体感竞速。使用摄像头手势控制的未来风格 3D 竞速游戏。基于 WebGL 和 MediaPipe 技术。">
+  <meta property="og:title" content="空中飞车 - 体感竞速游戏" />
+  <meta property="og:type" content="game" />
+  <meta property="og:url" content="" />
+  <meta property="og:image" content="" />
+  <meta property="og:site_name" content="空中飞车" />
+  <meta property="fb:admins" content="1482017639" />
+  <link rel="icon" href="http://hexgl.bkcore.com/favicon.png" type="image/png">
+  <link rel="shortcut icon" href="http://hexgl.bkcore.com/favicon.png" type="image/png">
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <link rel="stylesheet" href="css/multi.css" type="text/css" charset="utf-8">
+  <link rel="stylesheet" href="css/fonts.css" type="text/css" charset="utf-8">
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+    }
+
+    canvas {
+      pointer-events: none;
+      width: 100%;
+    }
+
+    #overlay {
+      position: absolute;
+      z-index: 9999;
+      top: 0;
+      left: 0;
+      width: 100%;
+    }
+  </style>
+  <script type="text/javascript">
+    //analytics
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-26274524-4']);
+    _gaq.push(['_trackPageview']);
+    (function () {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+</head>
+
+<body>
+  <div id="step-1">
+    <div id="global"></div>
+    <div id="title">
+    </div>
+    <div id="menucontainer">
+      <div id="menu">
+        <div id="start">开始游戏</div>
+        <div id="s-controlType" style="pointer-events: none; opacity: 0.7;">控制: 手势 (摄像头)</div>
+        <div id="s-quality">画质: 高</div>
+        <div id="s-hud">HUD: 开</div>
+        <div id="s-godmode" style="display: none">上帝模式: 关</div>
+        <div id="s-credits" style="display: none">制作团队</div>
+      </div>
+    </div>
+  </div>
+  <div id="step-2" style="display: none">
+    <div id="ctrl-help">点击或触摸继续</div>
+  </div>
+  <div id="step-3" style="display: none">
+    <div id="progressbar"></div>
+  </div>
+  <div id="step-4" style="display: none">
+    <div id="overlay"></div>
+    <div id="main"></div>
+  </div>
+  <div id="step-5" style="display: none">
+    <div id="time"></div>
+    <div id="ctrl-help">点击或触摸继续</div>
+  </div>
+  <div id="credits" style="display: none">
+    <h3>代码</h3>
+    <p><b>概念与开发</b><br>Thibaut Despoulain (BKcore)</p>
+    <p><b>贡献者</b><br>townxelliot<br>mahesh.kk</p>
+    <p><b>技术栈</b><br>WebGL<br>JavaScript<br>CoffeeScript<br>Three.js<br>LeapMotion<br>MediaPipe (体感控制)</p>
+    <h3>美术</h3>
+    <p><b>HexMKI 飞船模型</b><br>Charnel</p>
+    <p><b>赛道贴图</b><br>Nobiax</p>
+    <h4>点击任意位置继续</h4>
+  </div>
+
+  <div id="leapinfo" style="display: none"></div>
+
+  <script src="libs/leap-0.4.1.min.js"></script>
+  <script src="libs/Three.dev.js"></script>
+  <script src="libs/ShaderExtras.js"></script>
+  <script src="libs/postprocessing/EffectComposer.js"></script>
+  <script src="libs/postprocessing/RenderPass.js"></script>
+  <script src="libs/postprocessing/BloomPass.js"></script>
+  <script src="libs/postprocessing/ShaderPass.js"></script>
+  <script src="libs/postprocessing/MaskPass.js"></script>
+  <script src="libs/Detector.js"></script>
+  <script src="libs/Stats.js"></script>
+  <script src="libs/DAT.GUI.min.js"></script>
+
+  <script src="bkcore.coffee/controllers/TouchController.js"></script>
+  <script src="bkcore.coffee/controllers/OrientationController.js"></script>
+  <script src="bkcore.coffee/controllers/GamepadController.js"></script>
+
+  <script src="bkcore.coffee/Timer.js"></script>
+  <script src="bkcore.coffee/ImageData.js"></script>
+  <script src="bkcore.coffee/Utils.js"></script>
+
+  <script src="bkcore/threejs/RenderManager.js"></script>
+  <script src="bkcore/threejs/Shaders.js"></script>
+  <script src="bkcore/threejs/Particles.js"></script>
+  <script src="bkcore/threejs/Loader.js"></script>
+
+  <script src="bkcore/Audio.js"></script>
+
+  <script src="bkcore/hexgl/HUD.js"></script>
+  <script src="bkcore/hexgl/RaceData.js"></script>
+  <script src="bkcore/hexgl/ShipControls.js"></script>
+  <script src="bkcore/hexgl/ShipEffects.js"></script>
+  <script src="bkcore/hexgl/CameraChase.js"></script>
+  <script src="bkcore/hexgl/Gameplay.js"></script>
+
+  <script src="bkcore/hexgl/tracks/Cityscape.js"></script>
+
+  <script src="bkcore/hexgl/HexGL.js"></script>
+
+  <!-- MediaPipe dependencies (must be type module for CDN imports in CameraInput if we used imports, but CameraInput is loading dynamic imports? No, I used static imports in the file content.) -->
+  <!-- Since I used 'import ... from ...' in CameraInput.js, I MUST treat it as a module. -->
+  <script type="module" src="js/CameraInput.js"></script>
+
+  <script src="launch.js"></script>
+
+</body>
+
+</html>
