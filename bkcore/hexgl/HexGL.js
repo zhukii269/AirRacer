@@ -66,6 +66,12 @@ bkcore.hexgl.HexGL = function (opts) {
 
 	this.godmode = opts.godmode == undefined ? false : opts.godmode;
 
+	// Multiplayer properties
+	this.multiplayer = opts.multiplayer == undefined ? false : opts.multiplayer;
+	this.opponentShip = null;
+	this.opponentTargetPos = new THREE.Vector3();
+	this.opponentTargetQuat = new THREE.Quaternion();
+
 	this.hud = null;
 
 	this.gameplay = null;
@@ -125,6 +131,23 @@ bkcore.hexgl.HexGL.prototype.update = function () {
 	if (this.gameplay != null)
 		this.gameplay.update();
 
+	// Update opponent ship position in multiplayer mode
+	if (this.multiplayer && this.opponentShip) {
+		this.updateOpponentShip();
+	}
+
+	// Send local state to server in multiplayer mode
+	if (this.multiplayer && window.MultiplayerClient && window.MultiplayerClient.connected) {
+		var shipControls = this.components.shipControls;
+		if (shipControls && shipControls.mesh) {
+			window.MultiplayerClient.sendState(
+				shipControls.dummy.position,
+				shipControls.dummy.quaternion,
+				shipControls.speed
+			);
+		}
+	}
+
 	this.manager.renderCurrent();
 }
 
@@ -153,13 +176,22 @@ bkcore.hexgl.HexGL.prototype.initGameplay = function () {
 		analyser: this.track.analyser,
 		pixelRatio: this.track.pixelRatio,
 		track: this.track,
+		multiplayer: this.multiplayer,
 		onFinish: function () {
 			self.components.shipControls.terminate();
-			self.displayScore(this.finishTime, this.lapTimes);
+			// In multiplayer, send finish to server
+			if (self.multiplayer && window.MultiplayerClient) {
+				window.MultiplayerClient.sendFinish(this.finishTime);
+			} else {
+				self.displayScore(this.finishTime, this.lapTimes);
+			}
 		}
 	});
 
-	this.gameplay.start();
+	// In multiplayer, don't start until server says so
+	if (!this.multiplayer) {
+		this.gameplay.start();
+	}
 
 	bkcore.Audio.play('bg');
 	bkcore.Audio.play('wind');
@@ -413,3 +445,69 @@ bkcore.hexgl.HexGL.prototype.tweakShipControls = function () {
 	if (this.godmode)
 		c.shieldDamage = 0.0;
 }
+
+// Create opponent ship for multiplayer mode
+bkcore.hexgl.HexGL.prototype.createOpponentShip = function () {
+	if (!this.multiplayer) return;
+
+	var scene = this.manager.get('game').scene;
+
+	// Clone the ship geometry and create a red-tinted material for opponent
+	var shipGeom = this.track.lib.get("geometries", "ship");
+
+	// Create opponent material (red tint)
+	var opponentMaterial = new THREE.MeshBasicMaterial({
+		color: 0xff4444,
+		transparent: true,
+		opacity: 0.8
+	});
+
+	this.opponentShip = new THREE.Mesh(shipGeom, opponentMaterial);
+	this.opponentShip.scale.set(0.3, 0.3, 0.3);
+	this.opponentShip.position.copy(this.track.spawn);
+	scene.add(this.opponentShip);
+
+	console.log('[MP] Opponent ship created');
+}
+
+// Update opponent ship position (called every frame in multiplayer)
+bkcore.hexgl.HexGL.prototype.updateOpponentShip = function () {
+	if (!this.opponentShip || !window.MultiplayerClient) return;
+
+	var state = window.MultiplayerClient.opponentState;
+	if (!state) return;
+
+	// Update target position and quaternion
+	this.opponentTargetPos.set(state.position.x, state.position.y, state.position.z);
+	this.opponentTargetQuat.set(
+		state.quaternion.x,
+		state.quaternion.y,
+		state.quaternion.z,
+		state.quaternion.w
+	);
+
+	// Smoothly interpolate to target (lerp)
+	this.opponentShip.position.lerp(this.opponentTargetPos, 0.3);
+	this.opponentShip.quaternion.slerp(this.opponentTargetQuat, 0.3);
+}
+
+// Display multiplayer race result
+bkcore.hexgl.HexGL.prototype.displayMultiplayerResult = function (result) {
+	this.active = false;
+
+	var isWinner = result.winner === window.MultiplayerClient.playerId;
+	var myTime = result.yourTime ? bkcore.Timer.msToTimeString(result.yourTime) : null;
+	var oppTime = result.opponentTime ? bkcore.Timer.msToTimeString(result.opponentTime) : null;
+
+	// Display result using existing gameover screen
+	if (this.gameover !== null) {
+		this.gameover.style.display = "block";
+
+		var timeStr = myTime ? myTime.m + "'" + myTime.s + "''" + myTime.ms : "DNF";
+		var resultStr = isWinner ? "🏆 Victory! " : "💀 Defeat ";
+
+		this.gameover.children[0].innerHTML = resultStr + timeStr;
+		this.containers.main.parentElement.style.display = "none";
+	}
+}
+

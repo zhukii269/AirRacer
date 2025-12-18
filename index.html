@@ -55,7 +55,8 @@
     </div>
     <div id="menucontainer">
       <div id="menu">
-        <div id="start">开始游戏</div>
+        <div id="start">单人模式</div>
+        <div id="start-multi">双人模式</div>
         <div id="s-controlType" style="pointer-events: none; opacity: 0.7;">控制: 手势 (摄像头)</div>
         <div id="s-quality">画质: 高</div>
         <div id="s-hud">HUD: 开</div>
@@ -90,6 +91,25 @@
   </div>
 
   <div id="leapinfo" style="display: none"></div>
+
+  <!-- Multiplayer room UI -->
+  <div id="mp-lobby" style="display: none">
+    <h2>双人模式</h2>
+    <div id="mp-menu">
+      <div id="mp-create" class="mp-btn">创建房间</div>
+      <div id="mp-join-input">
+        <input type="text" id="mp-room-code" placeholder="输入6位房间码" maxlength="6">
+        <div id="mp-join" class="mp-btn">加入房间</div>
+      </div>
+      <div id="mp-back" class="mp-btn">返回</div>
+    </div>
+    <div id="mp-waiting" style="display: none">
+      <div id="mp-room-display">房间码: <span id="mp-code"></span></div>
+      <div id="mp-status">等待对手加入...</div>
+      <div id="mp-ready" class="mp-btn" style="display: none">准备</div>
+    </div>
+    <div id="mp-error" style="display: none; color: #ff4444;"></div>
+  </div>
 
   <script src="libs/leap-0.4.1.min.js"></script>
   <script src="libs/Three.dev.js"></script>
@@ -128,6 +148,9 @@
   <script src="bkcore/hexgl/tracks/Cityscape.js"></script>
 
   <script src="bkcore/hexgl/HexGL.js"></script>
+
+  <!-- Multiplayer client -->
+  <script src="js/MultiplayerClient.js"></script>
 
   <!-- MediaPipe dependencies (must be type module for CDN imports in CameraInput if we used imports, but CameraInput is loading dynamic imports? No, I used static imports in the file content.) -->
   <!-- Since I used 'import ... from ...' in CameraInput.js, I MUST treat it as a module. -->
