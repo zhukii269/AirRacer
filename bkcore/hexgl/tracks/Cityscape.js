@@ -17,15 +17,15 @@ bkcore.hexgl.tracks.Cityscape = {
 	name: "Cityscape",
 
 	checkpoints: {
-		list: [0,1,2],
+		list: [0, 1, 2],
 		start: 0,
 		last: 2
 	},
 
 	spawn: {
-		x: -1134*2,
+		x: -1134 * 2,
 		y: 387,
-		z: -443*2
+		z: -443 * 2
 	},
 
 	spawnRotation: {
@@ -37,52 +37,53 @@ bkcore.hexgl.tracks.Cityscape = {
 	analyser: null,
 	pixelRatio: 2048.0 / 6000.0,
 
-	load: function(opts, quality)
-	{
+	load: function (opts, quality, ship) {
 		this.lib = new bkcore.threejs.Loader(opts);
+		this.selectedShip = ship || 'feisar';
 
 		// desktop + quality low
 		// OR
 		// mobile + quality low or mid
-		if(quality < 2) // LOW
+		if (quality < 2) // LOW
 		{
+			var shipPathLow = "textures/ships/" + this.selectedShip + "/";
 			this.lib.load({
 				textures: {
-					'hex'								: "textures/hud/hex.jpg",
-					'spark'								: "textures/particles/spark.png",
-					'cloud'								: "textures/particles/cloud.png",
-					'ship.feisar.diffuse'				: "textures/ships/feisar/diffuse.jpg",
-					'booster.diffuse'					: "textures/ships/feisar/booster/booster.png",
-					'booster.sprite'					: "textures/ships/feisar/booster/boostersprite.jpg",
-					'track.cityscape.diffuse'			: "textures/tracks/cityscape/diffuse.jpg",
-					'track.cityscape.scrapers1.diffuse'	: "textures/tracks/cityscape/scrapers1/diffuse.jpg",
-					'track.cityscape.scrapers2.diffuse'	: "textures/tracks/cityscape/scrapers2/diffuse.jpg",
-					'track.cityscape.start.diffuse'		: "textures/tracks/cityscape/start/diffuse.jpg",
-					'track.cityscape.start.banner'		: "textures/tracks/cityscape/start/start.jpg",
-					'bonus.base.diffuse'				: "textures/bonus/base/diffuse.jpg"
+					'hex': "textures/hud/hex.jpg",
+					'spark': "textures/particles/spark.png",
+					'cloud': "textures/particles/cloud.png",
+					'ship.feisar.diffuse': shipPathLow + "diffuse.jpg",
+					'booster.diffuse': "textures/ships/feisar/booster/booster.png",
+					'booster.sprite': "textures/ships/feisar/booster/boostersprite.jpg",
+					'track.cityscape.diffuse': "textures/tracks/cityscape/diffuse.jpg",
+					'track.cityscape.scrapers1.diffuse': "textures/tracks/cityscape/scrapers1/diffuse.jpg",
+					'track.cityscape.scrapers2.diffuse': "textures/tracks/cityscape/scrapers2/diffuse.jpg",
+					'track.cityscape.start.diffuse': "textures/tracks/cityscape/start/diffuse.jpg",
+					'track.cityscape.start.banner': "textures/tracks/cityscape/start/start.jpg",
+					'bonus.base.diffuse': "textures/bonus/base/diffuse.jpg"
 				},
 				texturesCube: {
-					'skybox.dawnclouds'					: "textures/skybox/dawnclouds/%1.jpg"
+					'skybox.dawnclouds': "textures/skybox/dawnclouds/%1.jpg"
 				},
 				geometries: {
-					'bonus.base'						: "geometries/bonus/base/base.js",
-					'booster'							: "geometries/booster/booster.js",
-					'ship.feisar'						: "geometries/ships/feisar/feisar.js",
-					'track.cityscape'					: "geometries/tracks/cityscape/track.js",
-					'track.cityscape.scrapers1'			: "geometries/tracks/cityscape/scrapers1.js",
-					'track.cityscape.scrapers2'			: "geometries/tracks/cityscape/scrapers2.js",
-					'track.cityscape.start'				: "geometries/tracks/cityscape/start.js",
-					'track.cityscape.start.banner'		: "geometries/tracks/cityscape/startbanner.js",
-					'track.cityscape.bonus.speed'		: "geometries/tracks/cityscape/bonus/speed.js"
+					'bonus.base': "geometries/bonus/base/base.js",
+					'booster': "geometries/booster/booster.js",
+					'ship.feisar': "geometries/ships/feisar/feisar.js",
+					'track.cityscape': "geometries/tracks/cityscape/track.js",
+					'track.cityscape.scrapers1': "geometries/tracks/cityscape/scrapers1.js",
+					'track.cityscape.scrapers2': "geometries/tracks/cityscape/scrapers2.js",
+					'track.cityscape.start': "geometries/tracks/cityscape/start.js",
+					'track.cityscape.start.banner': "geometries/tracks/cityscape/startbanner.js",
+					'track.cityscape.bonus.speed': "geometries/tracks/cityscape/bonus/speed.js"
 				},
 				analysers: {
-					'track.cityscape.collision'			: "textures/tracks/cityscape/collision.png",
-					'track.cityscape.height'			: "textures/tracks/cityscape/height.png"
+					'track.cityscape.collision': "textures/tracks/cityscape/collision.png",
+					'track.cityscape.height': "textures/tracks/cityscape/height.png"
 				},
 				images: {
-					'hud.bg'							: "textures/hud/hud-bg.png",
-					'hud.speed'							: "textures/hud/hud-fg-speed.png",
-					'hud.shield'						: "textures/hud/hud-fg-shield.png"
+					'hud.bg': "textures/hud/hud-bg.png",
+					'hud.speed': "textures/hud/hud-fg-speed.png",
+					'hud.shield': "textures/hud/hud-fg-shield.png"
 				},
 				sounds: {
 					bg: {
@@ -117,56 +118,58 @@ bkcore.hexgl.tracks.Cityscape = {
 		// OR
 		// mobile + quality high
 		else // HIGH
-		{console.log('HIGH');
+		{
+			var shipPath = "textures.full/ships/" + this.selectedShip + "/";
+			console.log('HIGH - Loading ship:', this.selectedShip);
 			this.lib.load({
 				textures: {
-					'hex'								: "textures.full/hud/hex.jpg",
-					'spark'								: "textures.full/particles/spark.png",
-					'cloud'								: "textures.full/particles/cloud.png",
-					'ship.feisar.diffuse'				: "textures.full/ships/feisar/diffuse.jpg",
-					'ship.feisar.specular'				: "textures.full/ships/feisar/specular.jpg",
-					'ship.feisar.normal'				: "textures.full/ships/feisar/normal.jpg",
-					'booster.diffuse'					: "textures.full/ships/feisar/booster/booster.png",
-					'booster.sprite'					: "textures.full/ships/feisar/booster/boostersprite.jpg",
-					'track.cityscape.diffuse'			: "textures.full/tracks/cityscape/diffuse.jpg",
-					'track.cityscape.specular'			: "textures.full/tracks/cityscape/specular.jpg",
-					'track.cityscape.normal'			: "textures.full/tracks/cityscape/normal.jpg",
-					'track.cityscape.scrapers1.diffuse'	: "textures.full/tracks/cityscape/scrapers1/diffuse.jpg",
+					'hex': "textures.full/hud/hex.jpg",
+					'spark': "textures.full/particles/spark.png",
+					'cloud': "textures.full/particles/cloud.png",
+					'ship.feisar.diffuse': shipPath + "diffuse.jpg",
+					'ship.feisar.specular': shipPath + "specular.jpg",
+					'ship.feisar.normal': shipPath + "normal.jpg",
+					'booster.diffuse': "textures.full/ships/feisar/booster/booster.png",
+					'booster.sprite': "textures.full/ships/feisar/booster/boostersprite.jpg",
+					'track.cityscape.diffuse': "textures.full/tracks/cityscape/diffuse.jpg",
+					'track.cityscape.specular': "textures.full/tracks/cityscape/specular.jpg",
+					'track.cityscape.normal': "textures.full/tracks/cityscape/normal.jpg",
+					'track.cityscape.scrapers1.diffuse': "textures.full/tracks/cityscape/scrapers1/diffuse.jpg",
 					'track.cityscape.scrapers1.specular': "textures.full/tracks/cityscape/scrapers1/specular.jpg",
-					'track.cityscape.scrapers1.normal'	: "textures.full/tracks/cityscape/scrapers1/normal.jpg",
-					'track.cityscape.scrapers2.diffuse'	: "textures.full/tracks/cityscape/scrapers2/diffuse.jpg",
+					'track.cityscape.scrapers1.normal': "textures.full/tracks/cityscape/scrapers1/normal.jpg",
+					'track.cityscape.scrapers2.diffuse': "textures.full/tracks/cityscape/scrapers2/diffuse.jpg",
 					'track.cityscape.scrapers2.specular': "textures.full/tracks/cityscape/scrapers2/specular.jpg",
-					'track.cityscape.scrapers2.normal'	: "textures.full/tracks/cityscape/scrapers2/normal.jpg",
-					'track.cityscape.start.diffuse'		: "textures.full/tracks/cityscape/start/diffuse.jpg",
-					'track.cityscape.start.specular'	: "textures.full/tracks/cityscape/start/specular.jpg",
-					'track.cityscape.start.normal'		: "textures.full/tracks/cityscape/start/normal.jpg",
-					'track.cityscape.start.banner'		: "textures.full/tracks/cityscape/start/start.jpg",
-					'bonus.base.diffuse'				: "textures.full/bonus/base/diffuse.jpg",
-					'bonus.base.normal'					: "textures.full/bonus/base/normal.jpg",
-					'bonus.base.specular'				: "textures.full/bonus/base/specular.jpg"
+					'track.cityscape.scrapers2.normal': "textures.full/tracks/cityscape/scrapers2/normal.jpg",
+					'track.cityscape.start.diffuse': "textures.full/tracks/cityscape/start/diffuse.jpg",
+					'track.cityscape.start.specular': "textures.full/tracks/cityscape/start/specular.jpg",
+					'track.cityscape.start.normal': "textures.full/tracks/cityscape/start/normal.jpg",
+					'track.cityscape.start.banner': "textures.full/tracks/cityscape/start/start.jpg",
+					'bonus.base.diffuse': "textures.full/bonus/base/diffuse.jpg",
+					'bonus.base.normal': "textures.full/bonus/base/normal.jpg",
+					'bonus.base.specular': "textures.full/bonus/base/specular.jpg"
 				},
 				texturesCube: {
-					'skybox.dawnclouds'					: "textures.full/skybox/dawnclouds/%1.jpg"
+					'skybox.dawnclouds': "textures.full/skybox/dawnclouds/%1.jpg"
 				},
 				geometries: {
-					'bonus.base'						: "geometries/bonus/base/base.js",
-					'booster'							: "geometries/booster/booster.js",
-					'ship.feisar'						: "geometries/ships/feisar/feisar.js",
-					'track.cityscape'					: "geometries/tracks/cityscape/track.js",
-					'track.cityscape.scrapers1'			: "geometries/tracks/cityscape/scrapers1.js",
-					'track.cityscape.scrapers2'			: "geometries/tracks/cityscape/scrapers2.js",
-					'track.cityscape.start'				: "geometries/tracks/cityscape/start.js",
-					'track.cityscape.start.banner'		: "geometries/tracks/cityscape/startbanner.js",
-					'track.cityscape.bonus.speed'		: "geometries/tracks/cityscape/bonus/speed.js"
+					'bonus.base': "geometries/bonus/base/base.js",
+					'booster': "geometries/booster/booster.js",
+					'ship.feisar': "geometries/ships/feisar/feisar.js",
+					'track.cityscape': "geometries/tracks/cityscape/track.js",
+					'track.cityscape.scrapers1': "geometries/tracks/cityscape/scrapers1.js",
+					'track.cityscape.scrapers2': "geometries/tracks/cityscape/scrapers2.js",
+					'track.cityscape.start': "geometries/tracks/cityscape/start.js",
+					'track.cityscape.start.banner': "geometries/tracks/cityscape/startbanner.js",
+					'track.cityscape.bonus.speed': "geometries/tracks/cityscape/bonus/speed.js"
 				},
 				analysers: {
-					'track.cityscape.collision'			: "textures.full/tracks/cityscape/collision.png",
-					'track.cityscape.height'			: "textures.full/tracks/cityscape/height.png"
+					'track.cityscape.collision': "textures.full/tracks/cityscape/collision.png",
+					'track.cityscape.height': "textures.full/tracks/cityscape/height.png"
 				},
 				images: {
-					'hud.bg'							: "textures.full/hud/hud-bg.png",
-					'hud.speed'							: "textures.full/hud/hud-fg-speed.png",
-					'hud.shield'						: "textures.full/hud/hud-fg-shield.png"
+					'hud.bg': "textures.full/hud/hud-bg.png",
+					'hud.speed': "textures.full/hud/hud-fg-speed.png",
+					'hud.shield': "textures.full/hud/hud-fg-shield.png"
 				},
 				sounds: {
 					bg: {
@@ -194,12 +197,11 @@ bkcore.hexgl.tracks.Cityscape = {
 		}
 	},
 
-	buildMaterials: function(quality)
-	{
+	buildMaterials: function (quality) {
 		// desktop + quality low
 		// OR
 		// mobile + quality low or mid
-		if(quality < 2) // LOW
+		if (quality < 2) // LOW
 		{
 			this.materials.track = new THREE.MeshBasicMaterial({
 				map: this.lib.get("textures", "track.cityscape.diffuse"),
@@ -331,29 +333,28 @@ bkcore.hexgl.tracks.Cityscape = {
 		}
 	},
 
-	buildScenes: function(ctx, quality)
-	{
+	buildScenes: function (ctx, quality) {
 		// IMPORTANT
 		this.analyser = this.lib.get("analysers", "track.cityscape.collision");
 
 		// SKYBOX
 		var sceneCube = new THREE.Scene();
 
-		var cameraCube = new THREE.PerspectiveCamera( 70, ctx.width / ctx.height, 1, 6000 );
-		sceneCube.add( cameraCube );
+		var cameraCube = new THREE.PerspectiveCamera(70, ctx.width / ctx.height, 1, 6000);
+		sceneCube.add(cameraCube);
 
-		var skyshader = THREE.ShaderUtils.lib[ "cube" ];
-		skyshader.uniforms[ "tCube" ].texture = this.lib.get("texturesCube", "skybox.dawnclouds");
+		var skyshader = THREE.ShaderUtils.lib["cube"];
+		skyshader.uniforms["tCube"].texture = this.lib.get("texturesCube", "skybox.dawnclouds");
 
 		var skymaterial = new THREE.ShaderMaterial(
-		{
-			fragmentShader: skyshader.fragmentShader,
-			vertexShader: skyshader.vertexShader,
-			uniforms: skyshader.uniforms,
-			depthWrite: false
-		});
+			{
+				fragmentShader: skyshader.fragmentShader,
+				vertexShader: skyshader.vertexShader,
+				uniforms: skyshader.uniforms,
+				depthWrite: false
+			});
 
-		var mesh = new THREE.Mesh( new THREE.CubeGeometry( 100, 100, 100 ), skymaterial );
+		var mesh = new THREE.Mesh(new THREE.CubeGeometry(100, 100, 100), skymaterial);
 		mesh.flipSided = true;
 
 		sceneCube.add(mesh);
@@ -363,37 +364,36 @@ bkcore.hexgl.tracks.Cityscape = {
 		var ambient = 0xbbbbbb, diffuse = 0xffffff, specular = 0xffffff, shininess = 42, scale = 23;
 
 		// MAIN SCENE
-		var camera = new THREE.PerspectiveCamera( 70, ctx.width / ctx.height, 1, 60000 );
+		var camera = new THREE.PerspectiveCamera(70, ctx.width / ctx.height, 1, 60000);
 
 		var scene = new THREE.Scene();
-		scene.add( camera );
-		scene.add( new THREE.AmbientLight( ambient ) );
+		scene.add(camera);
+		scene.add(new THREE.AmbientLight(ambient));
 
 		// SUN
-		var sun = new THREE.DirectionalLight( diffuse, 1.5, 30000 );
-		sun.position.set( -4000, 1200, 1800 );
+		var sun = new THREE.DirectionalLight(diffuse, 1.5, 30000);
+		sun.position.set(-4000, 1200, 1800);
 		sun.lookAt(new THREE.Vector3());
 
 		// desktop + quality mid or high
-		if(quality > 2)
-		{
+		if (quality > 2) {
 			sun.castShadow = true;
 			sun.shadowCameraNear = 50;
-			sun.shadowCameraFar = camera.far*2;
-			sun.shadowCameraRight     =  3000;
-			sun.shadowCameraLeft      = -3000;
-			sun.shadowCameraTop       =  3000;
-			sun.shadowCameraBottom    = -3000;
+			sun.shadowCameraFar = camera.far * 2;
+			sun.shadowCameraRight = 3000;
+			sun.shadowCameraLeft = -3000;
+			sun.shadowCameraTop = 3000;
+			sun.shadowCameraBottom = -3000;
 			//sun.shadowCameraVisible = true;
 			sun.shadowBias = 0.0001;
 			sun.shadowDarkness = 0.7;
 			sun.shadowMapWidth = 2048;
 			sun.shadowMapHeight = 2048;
 		}
-		scene.add( sun );
+		scene.add(sun);
 
 		// SHIP
-		var ship = ctx.createMesh(scene, this.lib.get("geometries", "ship.feisar"), -1134*2, 10, -443*2, this.materials.ship);
+		var ship = ctx.createMesh(scene, this.lib.get("geometries", "ship.feisar"), -1134 * 2, 10, -443 * 2, this.materials.ship);
 
 		var booster = ctx.createMesh(ship, this.lib.get("geometries", "booster"), 0, 0.665, -3.8, this.materials.booster);
 		booster.depthWrite = false;
@@ -410,7 +410,7 @@ bkcore.hexgl.tracks.Cityscape = {
 
 		var boosterLight = new THREE.PointLight(0x00a2ff, 4.0, 60);
 		boosterLight.position.set(0, 0.665, -4);
-		
+
 		// desktop + quality low, mid or high
 		// OR
 		// mobile + quality mid or high
@@ -418,7 +418,7 @@ bkcore.hexgl.tracks.Cityscape = {
 		// when it wasn't before; this is because this booster setting
 		// is the only difference between mobile + mid quality
 		// and desktop + low quality, so I merged them for convenience
-		if(quality > 0)
+		if (quality > 0)
 			ship.add(boosterLight);
 
 		// SHIP CONTROLS
@@ -443,10 +443,9 @@ bkcore.hexgl.tracks.Cityscape = {
 			boosterLight: boosterLight,
 			useParticles: false
 		};
-		
+
 		// desktop + quality mid or high
-		if(quality > 2)
-		{
+		if (quality > 2) {
 			fxParams.textureCloud = this.lib.get("textures", "cloud");
 			fxParams.textureSpark = this.lib.get("textures", "spark");
 			fxParams.useParticles = true;
@@ -475,11 +474,10 @@ bkcore.hexgl.tracks.Cityscape = {
 			viewOffset: 10.0
 		});
 
-		ctx.manager.add("game", scene, camera, function(delta, renderer)
-		{
-			if(delta > 25 && this.objects.lowFPS < 1000) this.objects.lowFPS++;
+		ctx.manager.add("game", scene, camera, function (delta, renderer) {
+			if (delta > 25 && this.objects.lowFPS < 1000) this.objects.lowFPS++;
 
-			var dt = delta/16.6;
+			var dt = delta / 16.6;
 
 			this.objects.components.shipControls.update(dt);
 
@@ -497,25 +495,25 @@ bkcore.hexgl.tracks.Cityscape = {
 			this.objects.components.cameraChase.cameraCube.rotation.copy(c.rotation);*/
 
 			this.objects.composers.game.render(dt);
-			if(this.objects.hud) this.objects.hud.update(
+			if (this.objects.hud) this.objects.hud.update(
 				this.objects.components.shipControls.getRealSpeed(100),
 				this.objects.components.shipControls.getRealSpeedRatio(),
 				this.objects.components.shipControls.getShield(100),
 				this.objects.components.shipControls.getShieldRatio()
 			);
-			if(this.objects.components.shipControls.getShieldRatio() < 0.2)
+			if (this.objects.components.shipControls.getShieldRatio() < 0.2)
 				this.objects.extras.vignetteColor.setHex(0x992020);
 			else
 				this.objects.extras.vignetteColor.setHex(0x458ab1);
 		},
-		{
-			components: ctx.components,
-			composers: ctx.composers,
-			extras: ctx.extras,
-			quality: quality,
-			hud: ctx.hud,
-			time: 0.0,
-			lowFPS: 0
-		});
+			{
+				components: ctx.components,
+				composers: ctx.composers,
+				extras: ctx.extras,
+				quality: quality,
+				hud: ctx.hud,
+				time: 0.0,
+				lowFPS: 0
+			});
 	}
 }

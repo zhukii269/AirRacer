@@ -165,7 +165,7 @@ bkcore.hexgl.HexGL.prototype.init = function () {
 }
 
 bkcore.hexgl.HexGL.prototype.load = function (opts) {
-	this.track.load(opts, this.quality);
+	this.track.load(opts, this.quality, this.ship);
 }
 
 bkcore.hexgl.HexGL.prototype.initGameplay = function () {
