@@ -452,19 +452,31 @@ bkcore.hexgl.HexGL.prototype.createOpponentShip = function () {
 
 	var scene = this.manager.get('game').scene;
 
-	// Clone the ship geometry and create a red-tinted material for opponent
-	var shipGeom = this.track.lib.get("geometries", "ship");
+	// Get the ship geometry (same as player ship)
+	var shipGeom = this.track.lib.get("geometries", "ship.feisar");
 
-	// Create opponent material (red tint)
+	if (!shipGeom) {
+		console.error('[MP] Failed to get ship geometry');
+		return;
+	}
+
+	// Create opponent material (red tint to distinguish from player)
 	var opponentMaterial = new THREE.MeshBasicMaterial({
 		color: 0xff4444,
 		transparent: true,
-		opacity: 0.8
+		opacity: 0.85
 	});
 
+	// Create the opponent ship mesh
 	this.opponentShip = new THREE.Mesh(shipGeom, opponentMaterial);
-	this.opponentShip.scale.set(0.3, 0.3, 0.3);
-	this.opponentShip.position.copy(this.track.spawn);
+
+	// Set initial position at spawn point (same scale as player ship in Cityscape.js)
+	this.opponentShip.position.set(
+		this.track.spawn.x,
+		this.track.spawn.y,
+		this.track.spawn.z
+	);
+
 	scene.add(this.opponentShip);
 
 	console.log('[MP] Opponent ship created');
@@ -486,9 +498,21 @@ bkcore.hexgl.HexGL.prototype.updateOpponentShip = function () {
 		state.quaternion.w
 	);
 
-	// Smoothly interpolate to target (lerp)
-	this.opponentShip.position.lerp(this.opponentTargetPos, 0.3);
-	this.opponentShip.quaternion.slerp(this.opponentTargetQuat, 0.3);
+	// Smoothly interpolate to target (manual lerp for older Three.js)
+	var alpha = 0.3;
+	var pos = this.opponentShip.position;
+	pos.x += (this.opponentTargetPos.x - pos.x) * alpha;
+	pos.y += (this.opponentTargetPos.y - pos.y) * alpha;
+	pos.z += (this.opponentTargetPos.z - pos.z) * alpha;
+
+	// Manual quaternion slerp
+	var q = this.opponentShip.quaternion;
+	var target = this.opponentTargetQuat;
+	q.x += (target.x - q.x) * alpha;
+	q.y += (target.y - q.y) * alpha;
+	q.z += (target.z - q.z) * alpha;
+	q.w += (target.w - q.w) * alpha;
+	q.normalize();
 }
 
 // Display multiplayer race result

@@ -13,9 +13,17 @@
     godmode: 0
   };
 
+  // Global game reference
+  var hexGL = null;
+  var isMultiplayer = false;
+  var gameLoaded = false;
+
   // Initialize game (single or multiplayer)
   function init(multiplayer) {
-    var hexGL = new bkcore.hexgl.HexGL({
+    isMultiplayer = multiplayer;
+    gameLoaded = false;
+
+    hexGL = new bkcore.hexgl.HexGL({
       document: document,
       width: window.innerWidth,
       height: window.innerHeight,
@@ -37,6 +45,7 @@
       onLoad: function () {
         console.log('LOADED.');
         hexGL.init();
+        gameLoaded = true;
         $('step-3').style.display = 'none';
         $('step-4').style.display = 'block';
 
@@ -44,8 +53,11 @@
           // Create opponent ship for multiplayer
           hexGL.createOpponentShip();
           // Setup multiplayer callbacks
-          setupMultiplayerCallbacks(hexGL);
-          // Signal ready to server
+          setupMultiplayerCallbacks();
+          // Start the game (render loop) - gameplay.start() will be called when countdown starts
+          hexGL.start();
+          // Signal ready to server (game is loaded)
+          console.log('[MP] Game loaded, sending ready to server');
           window.MultiplayerClient.ready();
         } else {
           hexGL.start();
@@ -61,13 +73,15 @@
     });
   }
 
-  // Setup multiplayer event callbacks
-  function setupMultiplayerCallbacks(hexGL) {
+  // Setup multiplayer event callbacks (called after game is loaded)
+  function setupMultiplayerCallbacks() {
     var mp = window.MultiplayerClient;
 
     mp.onCountdownStart = function () {
       console.log('[MP] Countdown starting');
-      hexGL.gameplay.start();
+      if (hexGL && hexGL.gameplay) {
+        hexGL.gameplay.start();
+      }
     };
 
     mp.onRaceStart = function (startTime) {
@@ -76,19 +90,21 @@
 
     mp.onOpponentFinished = function (time) {
       console.log('[MP] Opponent finished in', time, 'ms');
-      if (hexGL.hud) {
+      if (hexGL && hexGL.hud) {
         hexGL.hud.display("对手已完成!", 2);
       }
     };
 
     mp.onRaceResult = function (result) {
       console.log('[MP] Race result:', result);
-      hexGL.displayMultiplayerResult(result);
+      if (hexGL) {
+        hexGL.displayMultiplayerResult(result);
+      }
     };
 
     mp.onOpponentDisconnected = function () {
       console.log('[MP] Opponent disconnected');
-      if (hexGL.hud) {
+      if (hexGL && hexGL.hud) {
         hexGL.hud.display("对手断开连接", 3);
       }
     };
@@ -210,7 +226,7 @@
       });
   };
 
-  // Multiplayer Client Callbacks
+  // Multiplayer Client Callbacks (before game loads)
   window.MultiplayerClient.onRoomCreated = function (roomCode) {
     console.log('[MP] Room created:', roomCode);
     $('mp-menu').style.display = 'none';
@@ -224,40 +240,35 @@
     $('mp-menu').style.display = 'none';
     $('mp-waiting').style.display = 'block';
     $('mp-code').textContent = roomCode;
-    $('mp-status').textContent = '已加入房间，等待开始...';
+    $('mp-status').textContent = '已加入房间，点击准备开始!';
     $('mp-ready').style.display = 'block';
   };
 
   window.MultiplayerClient.onOpponentJoined = function () {
     console.log('[MP] Opponent joined');
-    $('mp-status').textContent = '对手已加入!';
+    $('mp-status').textContent = '对手已加入! 点击准备开始';
     $('mp-ready').style.display = 'block';
   };
 
+  // Initial countdown handler (before game loads) - starts loading
   window.MultiplayerClient.onCountdownStart = function () {
-    console.log('[MP] Countdown starting, loading game...');
-    $('mp-lobby').style.display = 'none';
-    $('step-2').style.display = 'block';
-    $('step-2').style.backgroundImage = "url(css/help-gesture.png)";
-    $('step-2').querySelector('#ctrl-help').textContent = '多人比赛即将开始...';
-
-    // Start loading immediately
-    setTimeout(function () {
-      $('step-2').style.display = 'none';
-      $('step-3').style.display = 'block';
-      init(true); // Multiplayer mode
-    }, 1000);
+    console.log('[MP] Countdown received, but game not loaded yet - this should not happen');
+    // This will be overridden by setupMultiplayerCallbacks after game loads
   };
 
   window.MultiplayerClient.onError = function (message) {
     showError(message);
   };
 
-  // Ready button
+  // Ready button - starts loading game immediately
   $('mp-ready').onclick = function () {
     $('mp-ready').style.display = 'none';
-    $('mp-status').textContent = '已准备，等待对手...';
-    window.MultiplayerClient.ready();
+    $('mp-status').textContent = '正在加载游戏...';
+
+    // Start loading the game immediately when ready is clicked
+    $('mp-lobby').style.display = 'none';
+    $('step-3').style.display = 'block';
+    init(true); // Multiplayer mode - will call ready() after loading
   };
 
   function showError(message) {
@@ -271,14 +282,18 @@
   }
 
   // Credits (keep existing)
-  $('s-credits').onclick = function () {
-    $('step-1').style.display = 'none';
-    $('credits').style.display = 'block';
-  };
+  if ($('s-credits')) {
+    $('s-credits').onclick = function () {
+      $('step-1').style.display = 'none';
+      $('credits').style.display = 'block';
+    };
+  }
 
-  $('credits').onclick = function () {
-    $('step-1').style.display = 'block';
-    $('credits').style.display = 'none';
-  };
+  if ($('credits')) {
+    $('credits').onclick = function () {
+      $('step-1').style.display = 'block';
+      $('credits').style.display = 'none';
+    };
+  }
 
 }).call(this);
