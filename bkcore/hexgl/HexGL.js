@@ -32,6 +32,9 @@ bkcore.hexgl.HexGL = function (opts) {
 
 	this.controlType = opts.controlType == undefined ? 1 : opts.controlType;
 
+	// Selected ship
+	this.ship = opts.ship == undefined ? 'feisar' : opts.ship;
+
 	// 0 == low, 1 == mid, 2 == high, 3 == very high
 	// the old platform+quality combinations map to these new quality values
 	// as follows:
@@ -440,6 +443,20 @@ bkcore.hexgl.HexGL.prototype.tweakShipControls = function () {
 		c.rollLerp = 0.07;
 		c.driftLerp = 0.3;
 		c.angularLerp = 0.4;
+	}
+
+	// Apply ship-specific stats from configuration
+	if (bkcore.hexgl.Ships) {
+		var shipConfig = bkcore.hexgl.Ships.get(this.ship);
+		if (shipConfig && shipConfig.stats) {
+			var stats = shipConfig.stats;
+			c.maxSpeed = stats.maxSpeed || c.maxSpeed;
+			c.thrust = stats.thrust || c.thrust;
+			c.angularSpeed = stats.angularSpeed || c.angularSpeed;
+			c.airResist = stats.airResist || c.airResist;
+			c.boosterSpeed = stats.boosterSpeed || (c.maxSpeed * 0.5);
+			console.log('[Ship] Applied stats for:', shipConfig.displayName);
+		}
 	}
 
 	if (this.godmode)

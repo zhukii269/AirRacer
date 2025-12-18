@@ -10,7 +10,8 @@
   var settings = {
     quality: 3,
     hud: 1,
-    godmode: 0
+    godmode: 0,
+    shipIndex: 0
   };
 
   // Global game reference
@@ -22,6 +23,10 @@
   function init(multiplayer) {
     isMultiplayer = multiplayer;
     gameLoaded = false;
+
+    var shipList = bkcore.hexgl.Ships.getList();
+    var shipKey = shipList[settings.shipIndex];
+    var shipConfig = bkcore.hexgl.Ships.get(shipKey);
 
     hexGL = new bkcore.hexgl.HexGL({
       document: document,
@@ -36,7 +41,8 @@
       controlType: 0,
       godmode: settings.godmode,
       track: 'Cityscape',
-      multiplayer: multiplayer
+      multiplayer: multiplayer,
+      ship: shipKey
     });
     window.hexGL = hexGL;
 
@@ -133,6 +139,22 @@
       elem.innerHTML = label + options[settings[key]];
     };
   });
+
+  // Ship selection handler
+  var shipList = bkcore.hexgl.Ships.getList();
+  var shipElem = $('s-ship');
+  if (shipElem) {
+    var updateShipDisplay = function () {
+      var shipConfig = bkcore.hexgl.Ships.get(shipList[settings.shipIndex]);
+      shipElem.innerHTML = '飞船: ' + shipConfig.displayName;
+      shipElem.style.color = shipConfig.color;
+    };
+    updateShipDisplay();
+    shipElem.onclick = function () {
+      settings.shipIndex = (settings.shipIndex + 1) % shipList.length;
+      updateShipDisplay();
+    };
+  }
 
   // Check WebGL support
   function hasWebGL() {
