@@ -11,8 +11,15 @@
     quality: 3,
     hud: 1,
     godmode: 0,
-    shipIndex: 0
+    shipIndex: 0,
+    trackIndex: 0
   };
+
+  // Available tracks list
+  var trackList = [
+    { key: 'Cityscape', name: '城市' },
+    { key: 'MyTrack', name: '自定义' }
+  ];
 
   // Global game reference
   var hexGL = null;
@@ -40,7 +47,7 @@
       hud: settings.hud === 1,
       controlType: 0,
       godmode: settings.godmode,
-      track: 'Cityscape',
+      track: trackList[settings.trackIndex].key,
       multiplayer: multiplayer,
       ship: shipKey
     });
@@ -153,6 +160,19 @@
     shipElem.onclick = function () {
       settings.shipIndex = (settings.shipIndex + 1) % shipList.length;
       updateShipDisplay();
+    };
+  }
+
+  // Track selection handler
+  var trackElem = $('s-track');
+  if (trackElem) {
+    var updateTrackDisplay = function () {
+      trackElem.innerHTML = '赛道: ' + trackList[settings.trackIndex].name;
+    };
+    updateTrackDisplay();
+    trackElem.onclick = function () {
+      settings.trackIndex = (settings.trackIndex + 1) % trackList.length;
+      updateTrackDisplay();
     };
   }
 
